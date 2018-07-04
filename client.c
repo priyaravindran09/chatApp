@@ -8,12 +8,6 @@
 #include <netdb.h>
 #include <unistd.h>
 
-void error(char *msg)
-{
-    perror(msg);
-    exit(1);
-}
-
 int main(int argc, char *argv[])
 {
    int sockFd, portNo;
@@ -52,23 +46,25 @@ int main(int argc, char *argv[])
    }
 
    printf("Enter the message\n");
-   bzero(buffer,255);
-   fgets(buffer,255,stdin);
-   n = write(sockFd,buffer,strlen(buffer));
 
-   if(n < 0) {
-        printf("Error writing to socket\n");
+   while(1) {
+    bzero(buffer,255);
+    fgets(buffer,255,stdin);
+    n = write(sockFd,buffer,strlen(buffer));
+
+    if(n < 0) {
+            printf("Error writing to socket\n");
+    }
+    bzero(buffer,256);
+
+    n = read(sockFd,buffer,255);
+    
+    if(n < 0) {
+            printf("Error reading from socket\n");
+    }
+    else {
+            printf("message: %s\n",buffer);    
+    }
    }
-   bzero(buffer,256);
-
-   n = read(sockFd,buffer,255);
-
-   if(n < 0) {
-        printf("Error reading from socket\n");
-   }
-   else {
-        printf("%s\n",buffer);    
-   }
-
    return 0;
 }

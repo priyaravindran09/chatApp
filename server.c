@@ -1,20 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 
-void error(char *msg)
-{
-    perror(msg);
-    exit(1);
-}
-
 int main(int argc, char *argv[])
 {
-   char buffer[256];
+   char buffer[256],txBuffer[256];
    int sockFd, clientSocketFd, portNo, clientLen;
    struct sockaddr_in serverAdd, clientAdd;
    int n;
@@ -50,24 +45,32 @@ int main(int argc, char *argv[])
        printf("Error in creating Accept\n");
    }
 
-   bzero(buffer,255);
 
-   n = read(clientSocketFd,buffer,255);
+   while(1) {
+    bzero(buffer,255);
+    n = read(clientSocketFd,buffer,255);
+    
+    if(n < 0) {
+            printf("Error reading from socket\n");
+     }
+    else {
+            printf("Message: %s\n",buffer);
+    }
 
-   if(n < 0) {
-        printf("Error reading from socket\n");
+    if(strncmp(buffer,"quitchat",8) == 0) {
+        close(sockFd);
+        close(clientSocketFd);
+        exit(0);
+    }
+    
+    bzero(txBuffer,255);
+    fgets(txBuffer,255,stdin);
+    n = write(clientSocketFd,txBuffer,strlen(txBuffer));
+
+    if(n < 0) {
+            printf("Error writing to socket\n");
+    }
    }
-   else {
-        printf("Message: %s\n",buffer);
-   }
-
-   n = write(clientSocketFd,"Received message",16);
-
-   if(n < 0) {
-        printf("Error writing to socket\n");
-   }
-
-   close(clientSocketFd);
 
    return 0;
 }
