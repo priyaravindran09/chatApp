@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
    serverAdd.sin_port = htons(portNo); //convert values between host and network 
 
    //request connection to the server
-   if(connect(sockFd, &serverAdd, sizeof(serverAdd)) < 0) {
+   if(connect(sockFd, (struct sockaddr *) &serverAdd, (socklen_t) sizeof(serverAdd)) < 0) {
         printf("Connection Error\n");
         close(sockFd);
         exit(0);
@@ -97,6 +97,7 @@ int main(int argc, char *argv[])
         break;
 
    } while(1);
+
    printf("Closing socket\n");
    close(sockFd);
 

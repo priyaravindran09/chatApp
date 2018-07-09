@@ -96,7 +96,8 @@ int main(int argc, char *argv[])
         printf("byebye: %d\n",byebye);
         if(byebye == 0)
             break;
-   } while(1); 
+   } while(1);
+
    printf("Closing sockets\n");
    close(clientSocketFd);
    close(sockFd);
